@@ -41,7 +41,7 @@ def generate_new_name_for_episode(original_file_name, episode_mapping, reference
         raise ValueError("\"{}\" Arc not found in file {}".format(arc_name, reference_file))
 
     episode_number = arc.get(arc_ep_num)
-    if (episode_number is None):
+    if ((episode_number is None) or (episode_number == "")):
         raise ValueError("Episode {} not found in \"{}\" Arc in file {}".format(arc_ep_num, arc_name, reference_file))
 
     return "One.Piece.{}.{}.mkv".format(episode_number, resolution)
