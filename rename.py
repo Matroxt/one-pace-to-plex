@@ -4,14 +4,34 @@ import re
 import json
 import argparse
 
-# load_episodes_reference_file takes the reference file path
+args = None
+
+# set_ref_file_vars sets the chapterepisode reference files as global variables
+# because they're often referenced in the script
+def set_ref_file_vars(episodes_ref_file_path, chapters_ref_file_path):
+    global episodes_ref_file
+    episodes_ref_file = episodes_ref_file_path
+    global chapters_ref_file
+    chapters_ref_file = chapters_ref_file_path
+
+
+# set_mapping sets mapping of One Pace episodes as global variables
+# because they're often referenced in the script
+def set_mapping(episode_mapping_value, chapter_mapping_value):
+    global episode_mapping
+    episode_mapping = episode_mapping_value
+    global chapter_mapping
+    chapter_mapping = chapter_mapping_value
+
+
+# load_json_file takes a JSON file path
 # and returns a JSON object of it.
-def load_episodes_reference_file(reference_file):
-    with open(reference_file) as f:
+def load_json_file(file):
+    with open(file) as f:
         try:
             episode_mapping = json.load(f)
         except ValueError as e:
-            print("Failed to load the episode reference file \"{}\": {}".format(reference_file, e))
+            print("Failed to load the file \"{}\": {}".format(file, e))
             exit
 
     return episode_mapping
@@ -26,38 +46,55 @@ def list_mkv_files_in_directory(directory):
 # generate_new_name_for_episode parses the original one pace file name
 # and tries to match it with the reference episodes. 
 # It returns the new name the file should have
-def generate_new_name_for_episode(original_file_name, episode_mapping, reference_file):
+def generate_new_name_for_episode(original_file_name):
     reg = re.search(r'\[One Pace\]\[.*\] (.*?) (\d\d?) \[(\d+p)\].*\.mkv', original_file_name)
 
-    if (reg is None):
-        raise ValueError("File \"{}\" didn't match the regex".format(original_file_name))
+    if (reg is not None):
+        arc_name = reg.group(1)
+        arc_ep_num = reg.group(2)
+        resolution = reg.group(3)
 
-    arc_name = reg.group(1)
-    arc_ep_num = reg.group(2)
-    resolution = reg.group(3)
+        arc = episode_mapping.get(arc_name)
+        if (arc is None):
+            raise ValueError("\"{}\" Arc not found in file {}".format(arc_name, episodes_ref_file))
 
-    arc = episode_mapping.get(arc_name)
-    if (arc is None):
-        raise ValueError("\"{}\" Arc not found in file {}".format(arc_name, reference_file))
+        episode_number = arc.get(arc_ep_num)
+        if ((episode_number is None) or (episode_number == "")):
+            raise ValueError("Episode {} not found in \"{}\" Arc in file {}".format(arc_ep_num, arc_name, episodes_ref_file))
 
-    episode_number = arc.get(arc_ep_num)
-    if ((episode_number is None) or (episode_number == "")):
-        raise ValueError("Episode {} not found in \"{}\" Arc in file {}".format(arc_ep_num, arc_name, reference_file))
+        return "One.Piece.{}.{}.mkv".format(episode_number, resolution)
 
-    return "One.Piece.{}.{}.mkv".format(episode_number, resolution)
+    reg = re.search(r'\[One Pace\]\ Chapter\ (\d+-\d+) \[(\d+p)\].*\.mkv', original_file_name)
+
+    if (reg is not None):
+        chapters = reg.group(1)
+        resolution = reg.group(2)
+
+        episode_number = chapter_mapping.get(chapters)
+        if ((episode_number is None) or (episode_number == "")):
+            raise ValueError("\"{}\" Episode not found in file {}".format(chapters, chapters_ref_file))
+
+        return "One.Piece.{}.{}.mkv".format(episode_number, resolution)
+
+    raise ValueError("File \"{}\" didn't match the regexes".format(original_file_name))
 
 
 def main():
     parser = argparse.ArgumentParser(description='Rename One Pace files to a format Plex understands')
     parser.add_argument("-rf", "--reference-file", nargs='?', help="Path to the episodes reference file", default="episodes-reference.json")
+    parser.add_argument("-crf", "--chapter-reference-file", nargs='?', help="Path to the chapters reference file", default="chapters-reference.json")
     parser.add_argument("-d", "--directory", nargs='?', help="Data directory (aka path where the mkv files are)", default=None)
     parser.add_argument("--dry-run", action="store_true", help="If this flag is passed, the output will only show how the files would be renamed")
     args = vars(parser.parse_args())
 
+
+    set_ref_file_vars(args["reference_file"], args["chapter_reference_file"] )
+
     if args["directory"] is None:
         args["directory"] = getcwd()
 
-    episode_mapping = load_episodes_reference_file(args["reference_file"])
+    set_mapping(load_json_file(episodes_ref_file), load_json_file(chapters_ref_file))
+
     video_files = list_mkv_files_in_directory(args["directory"])
 
     if len(video_files) == 0:
@@ -65,7 +102,7 @@ def main():
 
     for file in video_files:
         try:
-            new_episode_name = generate_new_name_for_episode(file, episode_mapping, args["reference_file"])
+            new_episode_name = generate_new_name_for_episode(file)
         except ValueError as e:
             print(e)
             continue
