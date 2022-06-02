@@ -59,9 +59,9 @@ For Plex to be able to fetch the metadata of the episodes, we need to rename the
 1.  Open a shell/powershell terminal.
 
 2.  Change directory to the place where you One Pace mkv files are: `cd /path/to/my/mkv/folder`
-    To make your life easier, you might want to move those file in the relevant arc directory before renaming.
+    To make your life easier, you might want to move those files in the relevant arc directory before renaming.
 
-3.  Copy the `rename.py` and `episodes-reference.json` file in that directory
+3.  Copy the `rename.py` and `episodes-reference.json` and `chapters-reference.json` file in that directory
 
 4.  Run the script in dry-run mode to see what change would occur (you can try with Docker or Python):
     1. Python: `python rename.py --dry-run`
@@ -71,6 +71,7 @@ For Plex to be able to fetch the metadata of the episodes, we need to rename the
     Your files will be renamed to the corresponding One Piece epidode, eg:
     - `[One Pace][3-5] Romance Dawn 03 [1080p][F5E73C4E].mkv` --> `One.Piece.E3.1080p.mkv`
     - `[One Pace][677-678] Punk Hazard 12 [720p][CD83F1E9].mkkv` --> `One.Piece.E603-E604.720p.mkv`
+    - `[One Pace] Chapter 700-701 [720p][2A35B710].mkv` -> `One.Piece.E628-E630.720p.mkv`
 
 6.  If not done in step 2.2, move the resulting mkv files in their respective arc directory (or all in the `One Piece [tvdb4-81797]` directory if you don't care about organizing your files)
 
