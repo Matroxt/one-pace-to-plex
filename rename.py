@@ -1,4 +1,4 @@
-from os import listdir, rename, getcwd
+from os import listdir, rename, getcwd, chdir
 from os.path import isfile, join
 import re
 import json
@@ -99,7 +99,7 @@ def main():
 
     if len(video_files) == 0:
         print("No mkv files found in directory \"{}\"".format(args["directory"]))
-
+    chdir(args["directory"])
     for file in video_files:
         try:
             new_episode_name = generate_new_name_for_episode(file)
