@@ -118,17 +118,17 @@ def main():
     for file in video_files:
         try:
             new_episode_name = generate_new_name_for_episode(basename(file))
-            new_episode_name = join(dirname(file),new_episode_name)
+            new_episode_path = join(dirname(file),new_episode_name)
         except ValueError as e:
             print(e)
             continue
 
         if args["dry_run"]:
-            print("DRYRUN: \"{}\" -> \"{}\"".format(file, new_episode_name))
+            print("DRYRUN: \"{}\" -> \"{}\"".format(file, new_episode_path))
             continue
         
-        print(f"Renaming \"{file}\" to \"{new_episode_name}\"")
-        rename(file, new_episode_name)
+        print(f"Renaming \"{file}\" to \"{new_episode_path}\"")
+        rename(file, new_episode_path)
 
 if __name__ == "__main__":
     main()
