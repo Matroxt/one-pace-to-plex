@@ -92,7 +92,7 @@ def main():
     parser.add_argument("-crf", "--chapter-reference-file", nargs='?', help="Path to the chapters reference file", default="chapters-reference.json")
     parser.add_argument("-d", "--directory", nargs='?', help="Data directory (aka path where the mkv files are)", default=None)
     parser.add_argument("--dry-run", action="store_true", help="If this flag is passed, the output will only show how the files would be renamed")
-    parser.add_argument("-sd", "--sub-dir", action="store_true", help="If this flag is passed, the script will search for mkv files in subdirectories as well")
+    parser.add_argument("-r", "--recurse", action="store_true", help="If this flag is passed, the script will search for mkv files in subdirectories as well")
     args = vars(parser.parse_args())
 
 
@@ -104,7 +104,7 @@ def main():
     set_mapping(load_json_file(episodes_ref_file), load_json_file(chapters_ref_file))
 
     video_files = list_mkv_files_in_directory(args["directory"])
-    if args["sub_dir"]: # check if subdirectories should be searched
+    if args["recurse"]: # check if subdirectories should be searched
         for root, dirs, files in walk(args["directory"]): # find all items in directory
             for dir in dirs: # loop through directories
                 video_files += list_mkv_files_in_directory(join(root, dir)) # add all mkv files in directory to list

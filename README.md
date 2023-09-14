@@ -76,7 +76,7 @@ For Plex to be able to fetch the metadata of the episodes, we need to rename the
 6.  If not done in step 2.2, move the resulting mkv files in their respective arc directory (or all in the `One Piece [tvdb4-81797]` directory if you don't care about organizing your files)
 
 ### 2.5 File Renaming - With a directory structure
-If the files are already in their respective folder structure (see step 1) you can use the `-sd` or `--sub-dir` flag to inform the script to search sub directories
+If the files are already in their respective folder structure (see step 1) you can use the `-r` or `--recurse` flag to inform the script to search sub directories
 1.  Open a shell/powershell terminal.
 
 2.  Change directory to the directory that contains your folder structure (e.g. `One Piece [tvdb4-81797]`)
@@ -85,8 +85,8 @@ If the files are already in their respective folder structure (see step 1) you c
 
 4.  Run the script in dry-run mode with the subdirectory flag to see what change would occur
 
-    1.  If you did step 3: `python rename.py -sd --dry-run`
-    2.  Or specify directory `python rename.py -d "/path/to/one/pace/files" -sd --dry-run`
+    1.  If you did step 3: `python rename.py -r --dry-run`
+    2.  Or specify directory `python rename.py -d "/path/to/one/pace/files" -r --dry-run`
 
 5.  Once you are okay with the changes you see, remove the `--dry-run` flag from the command and run it again.
     Your files will be renamed to the corresponding One Piece epidode, eg:
