@@ -116,8 +116,7 @@ def main():
     
     for file in video_files:
         try:
-            #new_episode_name = generate_new_name_for_episode(basename(file))
-            new_episode_name = "test"+(basename(file))
+            new_episode_name = generate_new_name_for_episode(basename(file))
             new_episode_path = join(dirname(file),new_episode_name)
         except ValueError as e:
             print(e)
