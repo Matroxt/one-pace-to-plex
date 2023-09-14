@@ -1,5 +1,5 @@
 from os import listdir, rename, getcwd, walk
-from os.path import isfile, join, abspath, basename, dirname
+from os.path import isfile, join, abspath, basename, dirname, relpath
 import re
 import json
 import argparse
@@ -116,17 +116,22 @@ def main():
     
     for file in video_files:
         try:
-            new_episode_name = generate_new_name_for_episode(basename(file))
+            #new_episode_name = generate_new_name_for_episode(basename(file))
+            new_episode_name = "test"+(basename(file))
             new_episode_path = join(dirname(file),new_episode_name)
         except ValueError as e:
             print(e)
             continue
-
+        
+        #create some shorter file names for printing purposes        
+        short_file = relpath(file,args["directory"])
+        short_new_episode_path = relpath(new_episode_path,args["directory"])
+        
         if args["dry_run"]:
-            print("DRYRUN: \"{}\" -> \"{}\"".format(file, new_episode_path))
+            print("DRYRUN: \"{}\" -> \"{}\"".format(short_file, short_new_episode_path))
             continue
         
-        print(f"Renaming \"{file}\" to \"{new_episode_path}\"")
+        print(f"Renaming \"{short_file}\" to \"{short_new_episode_path}\"")
         rename(file, new_episode_path)
 
 if __name__ == "__main__":
