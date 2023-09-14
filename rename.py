@@ -36,6 +36,13 @@ def load_json_file(file):
 
     return episode_mapping
 
+def get_files_from_directories(directory, recurse=False):
+    video_files = list_mkv_files_in_directory(directory)
+    if recurse: # check if subdirectories should be searched
+        for root, dirs, files in walk(directory): # find all items in directory
+            for dir in dirs: # loop through directories
+                video_files += get_files_from_directories(join(root, dir), recurse) # add files from subdirectories to list
+    return video_files
 
 # list_mkv_files_in_directory returns all the files in the specified
 # directory that have the .mkv extention
@@ -103,11 +110,7 @@ def main():
 
     set_mapping(load_json_file(episodes_ref_file), load_json_file(chapters_ref_file))
 
-    video_files = list_mkv_files_in_directory(args["directory"])
-    if args["recurse"]: # check if subdirectories should be searched
-        for root, dirs, files in walk(args["directory"]): # find all items in directory
-            for dir in dirs: # loop through directories
-                video_files += list_mkv_files_in_directory(join(root, dir)) # add all mkv files in directory to list
+    video_files = get_files_from_directories(args["directory"], args["recurse"])
 
     if len(video_files) == 0:
         print("No mkv files found in directory \"{}\"".format(args["directory"]))
