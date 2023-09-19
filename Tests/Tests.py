@@ -1,0 +1,74 @@
+import os, sys
+import json
+import unittest
+from unittest.mock import patch, MagicMock, call
+
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)  # look in parent directory for python files
+
+import rename
+
+class TestRenameFunctions(unittest.TestCase):
+    
+    def test_load_json_file(self):
+        # test episode mapping file
+        episode_mapping = json.loads("""{
+                                            "Romance Dawn": {
+                                                "01": "S00E36",
+                                                "02": "E1",
+                                                "03": "E2",
+                                                "04": "E3"
+                                            }
+                                        }
+                                    """)
+        self.assertEqual(rename.load_json_file("./episodes-test.json"), episode_mapping)
+        
+        # test chapter mapping file
+        chapter_mapping = json.loads("""
+                                    {
+                                        "700-701": "E628-E630",
+                                        "702-703": "E631-E633"
+                                    }
+                                    """)
+        self.assertEqual(rename.load_json_file("./chapters-test.json"), chapter_mapping)
+        
+        
+        # test for a file that doesn't exist
+        with self.assertRaises(FileNotFoundError):
+            rename.load_json_file("./not-a-json-file.txt")
+        
+        #test with a file that is not valid json
+        #with self.assertRaises(ValueError):
+        #   rename.load_json_file("./invalid.json")
+        
+    def test_list_mkv_files_in_directory_invalid_directory(self):
+        # test for a directory that doesn't exist
+        with self.assertRaises(FileNotFoundError):
+            rename.list_mkv_files_in_directory("./not-a-directory")
+        
+    @patch("rename.abspath")
+    @patch("rename.listdir")
+    @patch("rename.isfile")
+    def test_list_mkv_files_in_directory(self,mock_isfile, mock_listdir, mock_abspath):
+        mock_isfile.return_value = True
+        mock_listdir.return_value = ["test.mkv", "test2.mkv", "test3.txt"]
+        #mock_abspath.return_value = 
+        
+        files = rename.list_mkv_files_in_directory("./")
+        
+        assert mock_listdir.called
+        assert mock_abspath.called
+              
+        mock_abspath.assert_has_calls([call("./test.mkv"), call("./test2.mkv")])
+        mock_abspath.assert_called_with("./test2.mkv")
+        mock_listdir.assert_called_with("./")
+        
+        assert len(files) == 2
+        
+        #self.assertEqual(rename.list_mkv_files_in_directory("./"), ["test.mkv", "test2.mkv"])
+
+    
+    
+if __name__ == '__main__':
+    unittest.main()
