@@ -84,6 +84,22 @@ class TestRenameFunctions(unittest.TestCase):
         assert mock_walk.called
         assert len(files) == 2
         
+    #unit test for rename.set_mapping()
+    def test_set_mapping(self):
+        rename.set_mapping("test", "test2")
+        self.assertEqual(rename.episode_mapping, "test")
+        self.assertEqual(rename.chapter_mapping, "test2")
     
+    #unit test for rename.set_ref_file_vars()
+    def test_set_ref_file_vars(self):
+        rename.set_ref_file_vars("test", "test2")
+        self.assertEqual(rename.episodes_ref_file, "test")
+        self.assertEqual(rename.chapters_ref_file, "test2")
+    
+    #unit test for rename.generate_new_name_for_episode()
+    def test_generate_new_name_for_episode(self):
+        #TODO
+        pass
+
 if __name__ == '__main__':
     unittest.main()
