@@ -11,7 +11,8 @@ import rename
 
 class TestRenameFunctions(unittest.TestCase):
     
-    def test_load_json_file(self):
+    @patch("rename.print")
+    def test_load_json_file(self, mock_print):
         # test episode mapping file
         episode_mapping = json.loads("""{
                                             "Romance Dawn": {
@@ -40,7 +41,12 @@ class TestRenameFunctions(unittest.TestCase):
         
         #test with a file that is not valid json
         #with self.assertRaises(ValueError):
-        #   rename.load_json_file("./invalid.json")
+        with patch.object(rename, "exit", return_value=None) as mock_exit:
+            with self.assertRaises(UnboundLocalError): #required as "episode_mapping" is not defined and exit has been patched
+                rename.load_json_file("./invalid.json")
+            mock_exit.assert_called_once
+            mock_print.assert_called_once_with("Failed to load the file \"./invalid.json\": Expecting value: line 1 column 1 (char 0)")
+        
         
     def test_list_mkv_files_in_directory_invalid_directory(self):
         # test for a directory that doesn't exist
