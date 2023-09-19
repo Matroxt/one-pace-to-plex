@@ -68,7 +68,22 @@ class TestRenameFunctions(unittest.TestCase):
         
         #self.assertEqual(rename.list_mkv_files_in_directory("./"), ["test.mkv", "test2.mkv"])
 
-    
+    @patch("rename.walk")
+    @patch("rename.list_mkv_files_in_directory")
+    def test_get_files_from_directories(self, mock_list_mkv, mock_walk):
+        mock_list_mkv.return_value = ["test.mkv"]
+        mock_walk.return_value = [("./Tests", ("tmp",), ("test.mkv",)),("./Tests/tmp", (), ("test2.mk","test3.mkv"))]
+        files = rename.get_files_from_directories("./")
+        
+        assert mock_list_mkv.called_once
+        assert mock_walk.called is False
+        mock_list_mkv.assert_called_with("./")
+        
+        files = rename.get_files_from_directories("./", recurse=True)
+        
+        assert mock_walk.called
+        assert len(files) == 2
+        
     
 if __name__ == '__main__':
     unittest.main()
