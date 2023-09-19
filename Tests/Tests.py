@@ -59,7 +59,7 @@ class TestRenameFunctions(unittest.TestCase):
         
         assert mock_listdir.called
         assert mock_abspath.called
-              
+        
         mock_abspath.assert_has_calls([call("./test.mkv"), call("./test2.mkv")])
         mock_abspath.assert_called_with("./test2.mkv")
         mock_listdir.assert_called_with("./")
@@ -98,8 +98,21 @@ class TestRenameFunctions(unittest.TestCase):
     
     #unit test for rename.generate_new_name_for_episode()
     def test_generate_new_name_for_episode(self):
-        #TODO
-        pass
+        rename.set_ref_file_vars("../episodes-reference.json", "../chapters-reference.json" )
+        rename.set_mapping(rename.load_json_file(rename.episodes_ref_file), rename.load_json_file(rename.chapters_ref_file))
+        
+        filename = "[One Pace][3-5] Romance Dawn 03 [1080p][F5E73C4E].mkv"
+        new_name = rename.generate_new_name_for_episode(filename)
+        assert new_name=="One.Piece.E2.1080p.mkv"
+        
+        filename = "[One Pace] Chapter 700-701 [720p][2A35B710].mkv"
+        new_name = rename.generate_new_name_for_episode(filename)
+        assert new_name=="One.Piece.E628-E630.720p.mkv"
+        
+        filename = "[One Pace][677-678] Punk Hazard 12 [720p][CD83F1E9].mkv"
+        new_name = rename.generate_new_name_for_episode(filename)
+        assert new_name=="One.Piece.E603-E604.720p.mkv"
+        
 
 if __name__ == '__main__':
     unittest.main()
