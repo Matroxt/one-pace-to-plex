@@ -39,9 +39,10 @@ def load_json_file(file):
 def get_files_from_directories(directory, recurse=False):
     video_files = list_mkv_files_in_directory(directory)
     if recurse: # check if subdirectories should be searched
-        for root, dirs, files in walk(directory): # find all items in directory
-            for dir in dirs: # loop through directories
-                video_files += get_files_from_directories(join(root, dir), recurse) # add files from subdirectories to list
+        subdirs = [x[0] for x in walk(directory)] #recursively get all subdirectories
+        #print(subdirs)
+        for dir in subdirs[1:]: # loop through directories, skipping the first one (the root directory) as it's already done
+            video_files += list_mkv_files_in_directory(dir)
     return video_files
 
 # list_mkv_files_in_directory returns all the files in the specified
