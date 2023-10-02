@@ -105,5 +105,8 @@ Obviously, this project does not condone piracy, you should own the media (DVD/B
 
 For contributions/constructive comments, feel free to open an issue on the Github page.
 
+## Unit Tests
+run the unit tests from the `Tests` folder by using `python Tests.py`
+
 ## TODO
 - Craft posters for each arc and commit them to the repo. Placed properly, they could be picked up by HAMA automatically.
