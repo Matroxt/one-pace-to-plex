@@ -54,11 +54,11 @@ I highly recommend to have a look at Absolute-Series-Scanner/HAMA plugin as they
 
 3. In each arc directory, place the `tvdb4.mapping` file. (You could also not use the arcs directory and keep all you episodes in the same folder, and have the `tvdb4.mapping` directly in the `One Piece [tvdb4-81797]` folder)
 
-### 2. File renaming
+### 2. File renaming - No Directories
 For Plex to be able to fetch the metadata of the episodes, we need to rename them to something that can be matched via the HAMA agent.
 1.  Open a shell/powershell terminal.
 
-2.  Change directory to the place where you One Pace mkv files are: `cd /path/to/my/mkv/folder`
+2.  Change directory to the place where your One Pace mkv files are: `cd /path/to/my/mkv/folder`
     To make your life easier, you might want to move those files in the relevant arc directory before renaming.
 
 3.  Copy the `rename.py` and `episodes-reference.json` and `chapters-reference.json` file in that directory
@@ -74,6 +74,25 @@ For Plex to be able to fetch the metadata of the episodes, we need to rename the
     - `[One Pace] Chapter 700-701 [720p][2A35B710].mkv` -> `One.Piece.E628-E630.720p.mkv`
 
 6.  If not done in step 2.2, move the resulting mkv files in their respective arc directory (or all in the `One Piece [tvdb4-81797]` directory if you don't care about organizing your files)
+
+### 2.5 File Renaming - With a directory structure
+If the files are already in their respective folder structure (see step 1) you can use the `-r` or `--recurse` flag to inform the script to search sub directories
+1.  Open a shell/powershell terminal.
+
+2.  Change directory to the directory that contains your folder structure (e.g. `One Piece [tvdb4-81797]`)
+
+3.  (optional) Copy the `rename.py` and `episodes-reference.json` and `chapters-reference.json` file in that directory
+
+4.  Run the script in dry-run mode with the subdirectory flag to see what change would occur
+
+    1.  If you did step 3: `python rename.py -r --dry-run`
+    2.  Or specify directory `python rename.py -d "/path/to/one/pace/files" -r --dry-run`
+
+5.  Once you are okay with the changes you see, remove the `--dry-run` flag from the command and run it again.
+    Your files will be renamed to the corresponding One Piece epidode, eg:
+    - `[One Pace][3-5] Romance Dawn 03 [1080p][F5E73C4E].mkv` --> `One.Piece.E3.1080p.mkv`
+    - `[One Pace][677-678] Punk Hazard 12 [720p][CD83F1E9].mkkv` --> `One.Piece.E603-E604.720p.mkv`
+    - `[One Pace] Chapter 700-701 [720p][2A35B710].mkv` -> `One.Piece.E628-E630.720p.mkv`
 
 ### 3. Plex library
 1.  Make sure the Plex library that has One Piece in it uses ASS as the scanner and HAMA as the agent. Scan the library.

@@ -1,5 +1,5 @@
-from os import listdir, rename, getcwd
-from os.path import isfile, join
+from os import listdir, rename, getcwd, walk
+from os.path import isfile, join, abspath, basename, dirname, relpath
 import re
 import json
 import argparse
@@ -36,11 +36,26 @@ def load_json_file(file):
 
     return episode_mapping
 
+def get_files_from_directories(directory, recurse=False):
+    video_files = list_mkv_files_in_directory(directory)
+    if recurse: # check if subdirectories should be searched
+        subdirs = [x[0] for x in walk(directory)] #recursively get all subdirectories
+        #print(subdirs)
+        for dir in subdirs[1:]: # loop through directories, skipping the first one (the root directory) as it's already done
+            video_files += list_mkv_files_in_directory(dir)
+    return video_files
 
 # list_mkv_files_in_directory returns all the files in the specified
 # directory that have the .mkv extention
 def list_mkv_files_in_directory(directory):
-    return [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
+    #get all filepaths for files in directory
+    files = [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
+    paths = []
+    for f in files:
+        paths.append(abspath(join(directory,f))) #get absolute path for each file
+    return paths
+    #return [f for f in listdir(directory) if (isfile(join(directory, f)) and "mkv" in f)]
+
 
 
 # generate_new_name_for_episode parses the original one pace file name
@@ -85,6 +100,7 @@ def main():
     parser.add_argument("-crf", "--chapter-reference-file", nargs='?', help="Path to the chapters reference file", default="chapters-reference.json")
     parser.add_argument("-d", "--directory", nargs='?', help="Data directory (aka path where the mkv files are)", default=None)
     parser.add_argument("--dry-run", action="store_true", help="If this flag is passed, the output will only show how the files would be renamed")
+    parser.add_argument("-r", "--recurse", action="store_true", help="If this flag is passed, the script will search for mkv files in subdirectories as well")
     args = vars(parser.parse_args())
 
 
@@ -95,23 +111,31 @@ def main():
 
     set_mapping(load_json_file(episodes_ref_file), load_json_file(chapters_ref_file))
 
-    video_files = list_mkv_files_in_directory(args["directory"])
+    video_files = get_files_from_directories(args["directory"], args["recurse"])
 
     if len(video_files) == 0:
         print("No mkv files found in directory \"{}\"".format(args["directory"]))
 
+
+    
     for file in video_files:
         try:
-            new_episode_name = generate_new_name_for_episode(file)
+            new_episode_name = generate_new_name_for_episode(basename(file))
+            new_episode_path = join(dirname(file),new_episode_name)
         except ValueError as e:
             print(e)
             continue
-
+        
+        #create some shorter file names for printing purposes        
+        short_file = relpath(file,args["directory"])
+        short_new_episode_path = relpath(new_episode_path,args["directory"])
+        
         if args["dry_run"]:
-            print("DRYRUN: \"{}\" -> \"{}\"".format(file, new_episode_name))
+            print("DRYRUN: \"{}\" -> \"{}\"".format(short_file, short_new_episode_path))
             continue
         
-        rename(file, new_episode_name)
+        print(f"Renaming \"{short_file}\" to \"{short_new_episode_path}\"")
+        rename(file, new_episode_path)
 
 if __name__ == "__main__":
     main()
