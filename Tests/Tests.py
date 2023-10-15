@@ -119,6 +119,10 @@ class TestRenameFunctions(unittest.TestCase):
         new_name = rename.generate_new_name_for_episode(filename)
         assert new_name=="One.Piece.E603-E604.720p.mkv"
         
+        filename = "[One Pace] [677-678] Punk Hazard 12 [720p][CD83F1E9].mkv"
+        new_name = rename.generate_new_name_for_episode(filename)
+        assert new_name=="One.Piece.E603-E604.720p.mkv"
+        
 
 if __name__ == '__main__':
     unittest.main()
